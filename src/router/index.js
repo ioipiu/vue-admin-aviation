@@ -60,7 +60,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/reg/table',
     name: 'Reg',
-    meta: { title: '法规管理', icon: 'nested' },
+    meta: { title: '法规管理', icon: 'component' },
     children: [
       {
         path: 'table',
@@ -107,14 +107,14 @@ export const constantRoutes = [
     name: 'user',
     meta: {
       title: '用户管理',
-      icon: 'nested'
+      icon: 'user'
     },
     children: [
       {
         path: 'user',
         component: () => import('@/views/users/Users'), // Parent router-view
         name: 'User',
-        meta: { title: '用户列表', icon: 'user' }
+        meta: { title: '用户列表', icon: 'peoples' }
       },
       {
         path: 'menu1'
@@ -128,14 +128,14 @@ export const constantRoutes = [
     name: 'Consulting',
     meta: {
       title: '咨询管理',
-      icon: 'nested'
+      icon: 'message'
     },
     children: [
       {
         path: 'con',
         component: () => import('@/views/consulting/Consulting'), // Parent router-view
         name: 'Consulting',
-        meta: { title: '咨询列表', icon: 'example' }
+        meta: { title: '咨询列表', icon: 'phone' }
       },
       {
         path: 'menu2'
@@ -149,34 +149,34 @@ export const constantRoutes = [
     name: 'settings',
     meta: {
       title: '设置',
-      icon: 'nested'
+      icon: 'list'
     },
     children: [
       {
         path: 'web',
         component: () => import('@/views/settings/WebSettings'), // Parent router-view
         name: 'Web',
-        meta: { title: '网站设置', icon: 'link' }
+        meta: { title: '网站设置', icon: 'international' }
       },
       {
         path: 'intro',
         component: () => import('@/views/settings/Introduction'),
-        meta: { title: '公司介绍', icon: 'eye-open' }
+        meta: { title: '公司介绍', icon: 'instructions' }
       },
       {
         path: 'service',
         component: () => import('@/views/settings/Service'),
-        meta: { title: '服务协议', icon: 'eye' }
+        meta: { title: '服务协议', icon: 'documentation' }
       },
       {
         path: 'smtp',
         component: () => import('@/views/settings/Smtp'),
-        meta: { title: '邮件SMTP设置', icon: 'eye' }
+        meta: { title: '邮件SMTP设置', icon: 'email' }
       },
       {
         path: 'mess',
         component: () => import('@/views/settings/Message'),
-        meta: { title: '短信设置', icon: 'eye' }
+        meta: { title: '短信设置', icon: 'tongxun' }
       },
       {
         path: 'admin',
@@ -186,7 +186,7 @@ export const constantRoutes = [
       {
         path: 'feedback',
         component: () => import('@/views/settings/Feedback'),
-        meta: { title: '意见反馈列表', icon: 'form' }
+        meta: { title: '意见反馈列表', icon: 'edit' }
       }
     ]
   },

@@ -1,6 +1,7 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <h1 align="center">航多知识管理系统 - 管理后台</h1>
+    <div class="dashboard-text">欢迎管理员: {{ name }}</div>
   </div>
 </template>
 
