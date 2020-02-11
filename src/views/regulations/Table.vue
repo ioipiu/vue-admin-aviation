@@ -1,61 +1,68 @@
 <template>
   <div>
+    <el-form :inline="true" class="demo-form-inline" style="margin-top: 30px;margin-left:30px">
+      <el-form-item>
+        <el-button type="primary" @click="btn">新增法规</el-button>
+      </el-form-item>
+    </el-form>
     <el-table
+      v-loading="loading"
       stripe
       :default-sort="{prop: 'date', order: 'descending'}"
-      :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+      :data="tableData.filter(data => !search || data.alias.toLowerCase().includes(search.toLowerCase()) ||
+        data.rname.includes(search))"
     >
       <el-table-column
-        prop="no"
+        prop="rno"
         label="部号"
         sortable
         width="200"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.no }}</span>
+          <span style="margin-left: 10px">{{ scope.row.rno }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="date"
+        prop="alias"
         label="法规部号别名"
         width="300"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px">{{ scope.row.alias }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="no"
+        prop="version"
         label="版本号"
         sortable
         width="200"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.no }}</span>
+          <span style="margin-left: 10px">{{ scope.row.version }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="rname"
         label="法规名称"
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>地址: {{ scope.row.address }}</p>
+            <p>法规类型: {{ scope.row.typeName }}</p>
+            <p>法规分类: {{ scope.row.classifyName }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.address }}</el-tag>
+              <el-tag size="medium">{{ scope.row.rname }}</el-tag>
             </div>
           </el-popover>
         </template>
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="stauts"
         label="前台显示"
-        sortable
         width="200"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span v-if="scope.row.status==0">不显示</span>
+          <span v-if="scope.row.status==1">显示</span>
         </template>
       </el-table-column>
       <el-table-column align="right" width="300px">
@@ -69,12 +76,12 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handleEdit(scope.$index, scope.row.rid)"
           >编辑</el-button>
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row.sid)"
+            @click="handleDelete(scope.$index, scope.row.rid)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -114,32 +121,77 @@ export default {
       search: '',
       currentPage: 1,
       pageSize: 10,
-      total: 0
+      total: 0,
+      loading: true
     }
   },
   mounted() {
     this.getData()
   },
   methods: {
-    handleEdit(index, row) {
-      console.log(index, row)
+    btn() {
+      this.$router.push({ path: '/reg/addReg' })
     },
-    handleDelete(index, row) {
-      console.log(index, row)
+    handleEdit(index, rid) {
+      console.log(index, rid)
+      this.$router.push({
+        name: 'UpdateReg',
+        query: {
+          rid: rid
+        }
+      })
     },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+    handleDelete(index, rid) {
+      this.$confirm('此操作将永久删除该法规, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var params = new URLSearchParams()
+        params.append('rid', rid)
+        this.$axios.post('http://localhost:8787/reg/delReg', params).then((res) => {
+          if (res.data.code == '2001') {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.getData()
+          }
+          if (res.data.code == '3001') {
+            this.$message.error('删除失败')
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+    handleSizeChange: function(size) {
+      this.pageSize = size
+      this.getData()
+    },
+    handleCurrentChange: function(currentPage) {
+      this.currentPage = currentPage
+      this.getData()
     },
     getData() {
-      this.$axios.get('data/table.json').then((res) => {
-        if (res.status == '200') {
-          this.tableData = res.data.data
+      const params = new URLSearchParams()
+      params.append('currentPage', this.currentPage)
+      params.append('pageSize', this.pageSize)
+      this.$axios.post('http://localhost:8787/reg/getAll', params).then((res) => {
+        this.loading = true
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.tableData = res.data.data.tableData
+          this.total = res.data.data.total
+          this.loading = false
         }
-      }, error => {
-
+        if (res.data.code == '3001') {
+          console.log('请求失败')
+          this.loading = false
+        }
       })
     }
   }

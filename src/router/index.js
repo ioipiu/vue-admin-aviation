@@ -69,7 +69,7 @@ export const constantRoutes = [
         meta: { title: '法规列表', icon: 'table' }
       },
       {
-        path: 'addGeg',
+        path: 'addReg',
         name: 'AddRegulations',
         component: () => import('@/views/regulations/AddRegulations'),
         meta: { title: '新增法规', icon: 'form' }
@@ -97,6 +97,13 @@ export const constantRoutes = [
         name: 'addTerms',
         component: () => import('@/views/terms/AddTerms'),
         meta: { title: '新增条款', icon: 'form' }
+      },
+      {
+        path: 'updateReg',
+        name: 'UpdateReg',
+        component: () => import('@/views/regulations/Update'),
+        meta: { title: '修改法规' },
+        hidden: true
       }
     ]
   },

@@ -59,7 +59,7 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (value.length < 4) {
-        callback(new Error('The user name can not be less than 6 digits'))
+        callback(new Error('The user name can not be less than 4 digits'))
       } else {
         callback()
       }
@@ -111,7 +111,7 @@ export default {
           const params = new URLSearchParams()
           params.append('mobile', this.loginForm.username)
           params.append('passWord', this.loginForm.password)
-          this.$axios.post('http://localhost:8787/login', params).then((res) => {
+          this.$axios.post('http://localhost:8787/admin/login', params).then((res) => {
             if (res.data.code == '2001') {
               sessionStorage.setItem('admin', JSON.stringify(res.data.data))
               this.$store.dispatch('user/login', this.loginForm).then(() => {
