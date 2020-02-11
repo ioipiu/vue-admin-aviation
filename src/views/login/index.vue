@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">航多知识管理系统</h3>
       </div>
 
       <el-form-item prop="username">
@@ -41,26 +41,25 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登 录</el-button>
 
-      <div class="tips">
+      <!--<div class="tips">
         <span style="margin-right:20px;">username: admin</span>
         <span> password: any</span>
-      </div>
+      </div>-->
 
     </el-form>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+      if (value.length < 4) {
+        callback(new Error('The user name can not be less than 6 digits'))
       } else {
         callback()
       }
@@ -74,8 +73,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '13840084349',
+        password: '891107'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -109,11 +108,25 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
+          const params = new URLSearchParams()
+          params.append('mobile', this.loginForm.username)
+          params.append('passWord', this.loginForm.password)
+          this.$axios.post('http://localhost:8787/login', params).then((res) => {
+            if (res.data.code == '2001') {
+              sessionStorage.setItem('admin', JSON.stringify(res.data.data))
+              this.$store.dispatch('user/login', this.loginForm).then(() => {
+                this.$router.push({ path: this.redirect || '/' })
+                this.loading = false
+              }).catch(() => {
+                this.loading = false
+              })
+              this.$message({
+                message: '恭喜你，登录成功',
+                type: 'success'
+              })
+            } else {
+              this.$message.error('对不起，账号密码错误')
+            }
           })
         } else {
           console.log('error submit!!')
