@@ -63,6 +63,12 @@ export const constantRoutes = [
     meta: { title: '法规管理', icon: 'component' },
     children: [
       {
+        path: 'org',
+        name: 'Org',
+        component: () => import('@/views/regulations/Organization'),
+        meta: { title: '组织管理', icon: 'data' }
+      },
+      {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/regulations/Table'),

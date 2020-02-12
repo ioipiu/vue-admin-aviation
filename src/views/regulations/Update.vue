@@ -174,7 +174,7 @@ export default {
       var rid = this.$route.query.rid
       const params = new URLSearchParams()
       params.append('rid', rid)
-      this.$axios.post('http://localhost:8787/reg/update', params).then((res) => {
+      this.$axios.post('http://localhost:8787/reg/getRegById', params).then((res) => {
         this.loading = true
         if (res.data.code == '2001') {
           console.log('请求成功')

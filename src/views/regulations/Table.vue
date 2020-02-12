@@ -47,8 +47,8 @@
       >
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>法规类型: {{ scope.row.typeName }}</p>
-            <p>法规分类: {{ scope.row.classifyName }}</p>
+            <p>法规分类: {{ scope.row.typeName }}</p>
+            <p>组织设定: {{ scope.row.classifyName }}</p>
             <div slot="reference" class="name-wrapper">
               <el-tag size="medium">{{ scope.row.rname }}</el-tag>
             </div>
