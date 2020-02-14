@@ -1,44 +1,38 @@
 <template>
   <div>
-    <el-form :inline="true"  class="demo-form-inline" style="margin-top: 30px;margin-left:30px">
+    <el-form :inline="true" class="demo-form-inline" style="margin-top: 30px;margin-left:30px">
       <el-form-item label="选择法规：">
-        <el-select v-model="value" clearable placeholder="请选择" style="width: 400px">
+        <el-select v-model="regId" clearable placeholder="请选择" style="width: 400px" @change="onChange">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in regList"
+            :key="item.rid"
+            :label="item.rname"
+            :value="item.rid"
           />
         </el-select>
       </el-form-item>
-      <el-button type="primary" style="margin-left: 50px">确定</el-button>
-      <el-button type="primary" style="margin-left: 500px">新增目录</el-button>
+      <el-button type="primary" @click="toAdd">新增目录</el-button>
     </el-form>
     <el-table
       :data="tableData"
+      style="width: 100%;margin-bottom: 20px;"
+      row-key="did"
+      border
       stripe
-      style="width: 100%"
+      default-expand-all
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column
+        prop="dname"
         label="目录名称"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
+      />
       <el-table-column
-        label="排序"
+        prop="sort"
+        label="同级排序"
         sortable
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
+          <span style="margin-left: 10px">{{ scope.row.sort }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -50,75 +44,159 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.$index, scope.row.did)"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      align="center"
-      style="margin-top: 20px"
-      :current-page="currentPage"
-      :page-sizes="[5,10,20,30]"
-      :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+    <!--弹出框-->
+    <el-dialog title="修改目录" :visible.sync="dialogFormVisible">
+      <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="200px" class="demo-ruleForm">
+        <el-form-item label="目录名称 ：" prop="dname">
+          <el-input v-model="ruleForm.dname" style="width: 500px" />
+        </el-form-item>
+        <el-form-item label="同级目录排序 ：" prop="sort">
+          <el-input-number v-model="ruleForm.sort" controls-position="right" :min="0" :max="100" />
+        </el-form-item>
+        <el-form-item label="选择法规：" prop="rid">
+          <el-select v-model="ruleForm.rid" clearable placeholder="请选择" style="width: 500px" @change="handerChange">
+            <el-option
+              v-for="item in regList"
+              :key="item.rid"
+              :label="item.rname"
+              :value="item.rid"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择父级目录：" prop="parentId">
+          <el-cascader
+            v-model="valueId"
+            :options="dire"
+            :props="{ value: 'did', label: 'dname', checkStrictly: true}"
+            clearable
+            style="width: 500px"
+            @change="onHandleChange"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateDir">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+
 export default {
   name: 'Directory',
   data() {
     return {
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      dialogFormVisible: false,
+      valueId: '',
+      options: [],
+      regList: [],
+      regId: '',
       value: '',
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }],
-      currentPage: 1,
-      pageSize: 10,
-      total: 0
+      tableData: [],
+      dire: [],
+      ruleForm: [],
+      rules: {
+        dname: [
+          { required: true, message: '请输入目录名称', trigger: 'blur' },
+          { max: 100, message: '长度不超过100个字符', trigger: 'blur' }
+        ],
+        rid: [
+          { required: true, message: '请选择所属法规', trigger: 'change' }
+        ],
+        parentId: [
+          { required: true, message: '请选择父级目录', trigger: 'change' }
+        ]
+      }
     }
   },
+  mounted() {
+    this.onload()
+  },
   methods: {
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+    handleEdit(index, row) {
+      this.ruleForm = row
+      var params = new URLSearchParams()
+      params.append('rid', this.ruleForm.rid)
+      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.dire = res.data.data
+          this.valueId = this.ruleForm.parentId
+          this.dialogFormVisible = true
+        }
+        if (res.data.code == '3001') {
+          console.log('无数据')
+        }
+      })
     },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+    handleDelete(index, did) {
+      console.log(index, did)
+    },
+    onload() {
+      this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.regList = res.data.data
+        }
+        if (res.data.code == '3001') {
+          console.log('请求失败')
+        }
+      })
+    },
+    onChange() {
+      this.tableData = []
+      var params = new URLSearchParams()
+      params.append('rid', this.regId)
+      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.tableData = res.data.data
+        }
+        if (res.data.code == '3001') {
+          console.log('无数据')
+        }
+      })
+    },
+    toAdd() {
+      this.$router.push({ path: '/reg/addDire' })
+    },
+    onHandleChange() {
+      if (this.valueId.length === 1) {
+        this.ruleForm.parentId = this.valueId[0]
+        this.ruleForm.level = this.valueId.length
+        console.log(this.valueId[0])
+        console.log('level:' + (this.valueId.length + 1))
+      } else {
+        this.ruleForm.parentId = this.valueId[this.valueId.length - 1]
+        this.ruleForm.level = this.valueId.length
+        console.log('level:' + (this.valueId.length + 1))
+      }
+    },
+    handerChange() {
+      this.valueId = ''
+      this.dire = []
+      var params = new URLSearchParams()
+      params.append('rid', this.ruleForm.rid)
+      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.dire = res.data.data
+        }
+        if (res.data.code == '3001') {
+          console.log('无数据')
+          this.ruleForm.parentId = 0
+        }
+      })
+    },
+    updateDir() {
+      console.log(this.ruleForm)
     }
   }
 }

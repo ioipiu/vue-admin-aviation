@@ -1,6 +1,16 @@
 <template>
   <div>
     <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="200px" class="demo-ruleForm" style="width: 1200px;margin-top: 30px">
+      <el-form-item label="分类：" prop="classifyId">
+        <el-cascader
+          ref="myCascader"
+          v-model="valueId"
+          :options="options"
+          clearable
+          style="width: 280px"
+          @change="onChange"
+        />
+      </el-form-item>
       <el-form-item label="法规部号：" prop="rno">
         <el-input v-model.number="ruleForm.rno" />
       </el-form-item>
@@ -103,22 +113,14 @@ export default {
   },
   data() {
     return {
+      options: [],
       disabled: false,
       imageUrl: '',
+      valueId: [],
       dialogVisible: false,
       regTypeList: [],
       classifyList: [],
-      ruleForm: {
-        rno: '',
-        alias: '',
-        version: '',
-        rname: '',
-        status: '',
-        icon: '',
-        pdfName: '',
-        pdfLink: '',
-        desc: ''
-      },
+      ruleForm: {},
       rules: {
         rno: [
           { required: true, message: '部号不能为空', trigger: 'blur' },
@@ -127,9 +129,6 @@ export default {
         alias: [
           { required: true, message: '请输入部号别名', trigger: 'blur' },
           { max: 100, message: '长度不超过100个字符', trigger: 'blur' }
-        ],
-        version: [
-          { required: true, message: '版本号不能为空', trigger: 'blur' }
         ],
         rname: [
           { required: true, message: '请输入法规名称', trigger: 'blur' },
@@ -246,7 +245,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$axios.post('http://localhost:8787/reg/UpdateReg', this.ruleForm).then((res) => {
+          this.$axios.post('http://localhost:8787/reg/updateReg', this.ruleForm).then((res) => {
             if (res.data.code == '2001') {
               this.$message({
                 message: '修改成功',
@@ -272,17 +271,25 @@ export default {
       const params = new URLSearchParams()
       params.append('rid', rid)
       this.$axios.post('http://localhost:8787/reg/getRegById', params).then((res) => {
-        this.loading = true
         if (res.data.code == '2001') {
           console.log('请求成功')
-          this.ruleForm = res.data.data
-          this.loading = false
+          this.options = res.data.data.options
+          this.ruleForm = res.data.data.reg
+          this.valueId = this.ruleForm.classifyId
         }
         if (res.data.code == '3001') {
           console.log('请求失败')
-          this.loading = false
         }
       })
+    },
+    onChange() {
+      if (this.valueId.length === 1) {
+        this.ruleForm.classifyId = this.valueId[0]
+        console.log(this.valueId[0])
+      } else {
+        this.ruleForm.classifyId = this.valueId[this.valueId.length - 1]
+        console.log(this.valueId[this.valueId.length - 1])
+      }
     }
   }
 }

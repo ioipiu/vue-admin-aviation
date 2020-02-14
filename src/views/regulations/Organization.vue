@@ -163,6 +163,8 @@ export default {
         }
         if (res.data.code == '3001') {
           console.log('请求失败')
+          this.classifyList = []
+          this.dialogTableVisible = true
         }
       })
     },

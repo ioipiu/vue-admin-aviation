@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="200px" class="demo-ruleForm" style="width: 1200px;margin-top: 30px">
-      <el-form-item label="一级分类：">
+      <!--<el-form-item label="一级分类：">
         <el-select v-model="ruleForm.typeId" placeholder="请选法规一级分类" @change="typeChange">
           <el-option
             v-for="item in regTypeList"
@@ -20,6 +20,16 @@
             :value="item.classifyId"
           />
         </el-select>
+      </el-form-item>-->
+      <el-form-item label="分类：" prop="classifyId">
+        <el-cascader
+          ref="myCascader"
+          v-model="valueId"
+          :options="options"
+          clearable
+          style="width: 280px"
+          @change="onChange"
+        />
       </el-form-item>
       <el-form-item label="法规部号：" prop="rno">
         <el-input v-model.number="ruleForm.rno" />
@@ -123,13 +133,15 @@ export default {
   },
   data() {
     return {
+      options: [],
       disabled: false,
-      flag: false,
       imageUrl: '',
+      valueId: '',
       dialogVisible: false,
       regTypeList: [],
       classifyList: [],
       ruleForm: {
+        classifyId: 0,
         rno: '',
         alias: '',
         version: '',
@@ -269,6 +281,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          console.log(this.ruleForm.classifyId)
           this.$axios.post('http://localhost:8787/reg/addReg', this.ruleForm).then((res) => {
             if (res.data.code == '2001') {
               this.$message({
@@ -289,10 +302,9 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
-      this.flag = false
     },
     onload() {
-      this.$axios.get('http://localhost:8787/reg/type').then((res) => {
+      /* this.$axios.get('http://localhost:8787/reg/type').then((res) => {
         if (res.data.code == '2001') {
           console.log('请求成功')
           this.regTypeList = res.data.data
@@ -302,7 +314,23 @@ export default {
         if (res.data.code == '3001') {
           console.log('请求失败')
         }
+      })*/
+      this.$axios.get('http://localhost:8787/cascader/showOptions').then((res) => {
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.options = res.data.data
+        }
+        if (res.data.code == '3001') {
+          console.log('请求失败')
+        }
       })
+    },
+    onChange() {
+      if (this.valueId.length === 1) {
+        this.ruleForm.classifyId = this.valueId[0]
+      } else {
+        this.ruleForm.classifyId = this.valueId[this.valueId.length - 1]
+      }
     }
   }
 }

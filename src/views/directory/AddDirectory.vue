@@ -1,30 +1,30 @@
 <template>
-  <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="200px" class="demo-ruleForm" style="width: 1200px;margin-top: 30px">
+  <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="200px" class="demo-ruleForm" style="width: 700px;margin-top: 30px">
     <el-form-item label="目录名称 ：" prop="dname">
       <el-input v-model="ruleForm.dname" />
     </el-form-item>
-    <el-form-item label="同级目录排序 ：">
-      <el-input-number v-model="ruleForm.sort" controls-position="right" :min="-100" :max="100" @change="handleChange" />
+    <el-form-item label="同级目录排序 ：" prop="sort">
+      <el-input-number v-model="ruleForm.sort" controls-position="right" :min="0" :max="100" />
     </el-form-item>
-    <el-form-item label="选择所属法规：" prop="rid">
-      <el-select v-model="reg" clearable placeholder="请选择" style="width: 500px">
+    <el-form-item label="选择法规：" prop="rid">
+      <el-select v-model="ruleForm.rid" clearable placeholder="请选择" style="width: 500px" @change="onChange">
         <el-option
           v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          :key="item.rid"
+          :label="item.rname"
+          :value="item.rid"
         />
       </el-select>
     </el-form-item>
-    <el-form-item label="选择父级目录：" prop="parent_id">
-      <el-select v-model="dir" clearable placeholder="请选择" style="width: 500px">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
+    <el-form-item label="选择父级目录：" prop="parentId">
+      <el-cascader
+        v-model="valueId"
+        :options="dire"
+        :props="{ value: 'did', label: 'dname', checkStrictly: true}"
+        clearable
+        style="width: 500px"
+        @change="onHandleChange"
+      />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm('ruleForm')">新增目录</el-button>
@@ -38,30 +38,16 @@ export default {
   name: 'AddDire',
   data() {
     return {
+      valueId: '',
+      dire: [],
       ruleForm: {
-        dname: '',
-        sort: '',
         rid: '',
-        parent_id: ''
+        dname: '',
+        sort: 0,
+        parentId: 0,
+        level: 1
       },
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      reg: {},
-      dir:{},
+      options: [],
       rules: {
         dname: [
           { required: true, message: '请输入目录名称', trigger: 'blur' },
@@ -70,29 +56,81 @@ export default {
         rid: [
           { required: true, message: '请选择所属法规', trigger: 'change' }
         ],
-        parent_id: [
+        parentId: [
           { required: true, message: '请选择父级目录', trigger: 'change' }
         ]
-      },
-      num: 1
+      }
     }
+  },
+  mounted() {
+    this.onload()
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          console.log(this.ruleForm)
+          this.$axios.post('http://localhost:8787/dir/addDir', this.ruleForm).then((res) => {
+            if (res.data.code == '2001') {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+            }
+            if (res.data.code == '3001') {
+              this.$message.error('添加失败')
+            }
+          })
         } else {
           console.log('error submit!!')
           return false
         }
       })
+      this.valueId = ''
+      this.dire = []
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
+      this.valueId = ''
+      this.dire = []
     },
-    handleChange(value) {
-      console.log(value)
+    onHandleChange() {
+      if (this.valueId.length === 1) {
+        this.ruleForm.parentId = this.valueId[0]
+        this.ruleForm.level = this.valueId.length
+        console.log(this.valueId[0])
+        console.log('level:' + (this.valueId.length + 1))
+      } else {
+        this.ruleForm.parentId = this.valueId[this.valueId.length - 1]
+        this.ruleForm.level = this.valueId.length
+        console.log('level:' + (this.valueId.length + 1))
+      }
+    },
+    onload() {
+      this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.options = res.data.data
+        }
+        if (res.data.code == '3001') {
+          console.log('请求失败')
+        }
+      })
+    },
+    onChange() {
+      this.valueId = ''
+      this.dire = []
+      var params = new URLSearchParams()
+      params.append('rid', this.ruleForm.rid)
+      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.dire = res.data.data
+        }
+        if (res.data.code == '3001') {
+          console.log('无数据')
+        }
+      })
     }
   }
 }
