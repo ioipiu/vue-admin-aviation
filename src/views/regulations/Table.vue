@@ -8,7 +8,7 @@
     <el-table
       v-loading="loading"
       stripe
-      :default-sort="{prop: 'date', order: 'descending'}"
+      :default-sort="{prop: 'rno', order: 'descending'}"
       :data="tableData.filter(data => !search || data.alias.toLowerCase().includes(search.toLowerCase()) ||
         data.rname.includes(search))"
     >

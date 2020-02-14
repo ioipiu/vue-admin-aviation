@@ -1,60 +1,57 @@
 <template>
   <div>
-    <el-form :inline="true" :model="formInline" class="demo-form-inline" style="margin-top: 30px;margin-left: 30px">
-      <el-form-item label="联系方式：">
-        <el-input v-model="formInline.phone" placeholder="请输入" />
-      </el-form-item>
-      <el-form-item label="咨询内容：">
-        <el-input v-model="formInline.content" placeholder="请输入" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">查询</el-button>
-      </el-form-item>
-    </el-form>
     <el-table
-      :data="tableData"
-      style="width: 100%"
+      v-loading="loading"
+      stripe
+      :default-sort="{prop: 'createTime', order: 'descending'}"
+      :data="tableData.filter(data => !search || data.content.includes(search) ||
+        data.phone.includes(search))"
     >
       <el-table-column
+        prop="cname"
         label="姓名"
-        width="180"
+        sortable
       >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px">{{ scope.row.cname }}</span>
         </template>
       </el-table-column>
       <el-table-column
+        prop="content"
         label="咨询内容"
-        width="500"
+        :show-overflow-tooltip="true"
+        width="500px"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px;overflow: hidden">{{ scope.row.content }}</span>
         </template>
       </el-table-column>
       <el-table-column
+        prop="createTime"
         label="咨询时间"
-        width="180"
+        sortable
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px">{{ scope.row.createTime | dateformat('YYYY-MM-DD HH:mm:ss') }}</span>
         </template>
       </el-table-column>
       <el-table-column
+        prop="phone"
         label="联系方式"
-        width="180"
+        sortable
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
+          <span style="margin-left: 10px">{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column align="right" width="300px">
+        <template slot="header" slot-scope="scope">
+          <el-input
+            v-model="search"
+            size="mini"
+            placeholder="输入关键字搜索"
+          />
+        </template>
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -63,42 +60,50 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.$index, scope.row.zid)"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      align="center"
+      style="margin-top: 20px"
+      :current-page="currentPage"
+      :page-sizes="[5,10,20,30]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+
+    <!--弹出框-->
+
   </div>
 </template>
 
+<style lang="css">
+  .el-tooltip__popper{font-size: 14px; max-width:50% } /*设置显示隐藏部分内容，按50%显示*/
+</style>
+
 <script>
+
 export default {
-  name: 'Consulting',
+  name: 'Con',
   data() {
     return {
-      formInline: {
-        user: '',
-        region: ''
-      },
-      value: '',
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      loading: true,
+      dialogFormVisible: false,
+      search: '',
+      currentPage: 1,
+      pageSize: 10,
+      total: 0,
+      tableData: [],
+      form: []
     }
+  },
+  mounted() {
+    this.onload()
   },
   methods: {
     onSubmit() {
@@ -107,8 +112,34 @@ export default {
     handleEdit(index, row) {
       console.log(index, row)
     },
-    handleDelete(index, row) {
-      console.log(index, row)
+    handleDelete(index, zid) {
+      console.log(index, zid)
+    },
+    handleSizeChange: function(size) {
+      this.pageSize = size
+      this.onload()
+    },
+    handleCurrentChange: function(currentPage) {
+      this.currentPage = currentPage
+      this.onload()
+    },
+    onload() {
+      const params = new URLSearchParams()
+      params.append('currentPage', this.currentPage)
+      params.append('pageSize', this.pageSize)
+      this.$axios.post('http://localhost:8787/usr/getCons', params).then((res) => {
+        this.loading = true
+        if (res.data.code == '2001') {
+          console.log('请求成功')
+          this.tableData = res.data.data.tableData
+          this.total = res.data.data.total
+          this.loading = false
+        }
+        if (res.data.code == '3001') {
+          console.log('请求失败')
+          this.loading = false
+        }
+      })
     }
   }
 

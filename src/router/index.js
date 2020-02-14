@@ -138,7 +138,7 @@ export const constantRoutes = [
     path: '/consulting',
     component: Layout,
     redirect: '/consulting/con',
-    name: 'Consulting',
+    name: 'consulting',
     meta: {
       title: '咨询管理',
       icon: 'message'
@@ -147,7 +147,7 @@ export const constantRoutes = [
       {
         path: 'con',
         component: () => import('@/views/consulting/Consulting'), // Parent router-view
-        name: 'Consulting',
+        name: 'Con',
         meta: { title: '咨询列表', icon: 'phone' }
       },
       {
