@@ -135,7 +135,7 @@ export default {
       var params = new URLSearchParams()
       params.append('typeName', this.form.typeName)
       this.$axios.post('http://localhost:8787/reg/addType', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           this.$message({
             message: '添加成功',
             type: 'success'
@@ -143,7 +143,7 @@ export default {
           this.dialogFormVisible = false
           this.onload()
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           this.$message.error('添加失败')
         }
       })
@@ -155,13 +155,13 @@ export default {
       var params = new URLSearchParams()
       params.append('typeId', typeId)
       this.$axios.post('http://localhost:8787/reg/showClassify', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.classifyList = res.data.data
           this.formInline.typeId = typeId
           this.dialogTableVisible = true
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
           this.classifyList = []
           this.dialogTableVisible = true
@@ -172,11 +172,11 @@ export default {
       var params = new URLSearchParams()
       params.append('typeId', this.formInline.typeId)
       this.$axios.post('http://localhost:8787/reg/showClassify', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.classifyList = res.data.data
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
         }
       })
@@ -190,14 +190,14 @@ export default {
         var params = new URLSearchParams()
         params.append('typeId', typeId)
         this.$axios.post('', params).then((res) => {
-          if (res.data.code == '2001') {
+          if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
               type: 'success'
             })
             this.getData()
           }
-          if (res.data.code == '3001') {
+          if (res.data.code === 3001) {
             this.$message.error('删除失败')
           }
         })
@@ -221,7 +221,7 @@ export default {
         var params = new URLSearchParams()
         params.append('classifyId', classifyId)
         this.$axios.post('http://localhost:8787/reg/delClassify', params).then((res) => {
-          if (res.data.code == '2001') {
+          if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
               type: 'success'
@@ -229,7 +229,7 @@ export default {
             this.refresh()
             this.onload()
           }
-          if (res.data.code == '3001') {
+          if (res.data.code === 3001) {
             this.$message.error('删除失败')
           }
         })
@@ -243,12 +243,12 @@ export default {
     onload() {
       this.$axios.get('http://localhost:8787/reg/type').then((res) => {
         this.loading = true
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.tableData = res.data.data
           this.loading = false
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
           this.loading = false
         }
@@ -259,7 +259,7 @@ export default {
       params.append('typeId', this.formInline.typeId)
       params.append('classifyName', this.formInline.classifyName)
       this.$axios.post('http://localhost:8787/reg/addClassify', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           this.$message({
             message: '添加成功',
             type: 'success'
@@ -268,21 +268,21 @@ export default {
           this.formInline.classifyName = ''
           this.onload()
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           this.$message.error('添加失败')
         }
       })
     },
     updateClassify() {
       this.$axios.post('http://localhost:8787/reg/updateClassify', this.classify).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           this.$message({
             message: '修改成功',
             type: 'success'
           })
           this.formVisible = false
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           this.$message.error('修改失败')
         }
       })

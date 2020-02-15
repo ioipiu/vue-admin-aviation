@@ -112,7 +112,7 @@ export default {
           params.append('mobile', this.loginForm.username)
           params.append('passWord', this.loginForm.password)
           this.$axios.post('http://localhost:8787/admin/login', params).then((res) => {
-            if (res.data.code == '2001') {
+            if (res.data.code === 2001) {
               sessionStorage.setItem('admin', JSON.stringify(res.data.data))
               this.$store.dispatch('user/login', this.loginForm).then(() => {
                 this.$router.push({ path: this.redirect || '/' })

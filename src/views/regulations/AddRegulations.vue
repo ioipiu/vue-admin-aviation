@@ -52,19 +52,15 @@
       <el-form-item label="首页法规图标 ：" prop="icon">
         <el-upload
           action=""
-          list-type="picture-card"
+          class="avatar-uploader"
           :auto-upload="false"
-          :limit="1"
           :on-change="handleChange"
           :before-upload="beforeAvatarUpload"
-          :on-preview="handlePictureCardPreview"
           :on-remove="handleRemove"
         >
-          <i class="el-icon-plus" />
+          <img v-if="ruleForm.icon" :src="ruleForm.icon" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon" />
         </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-          <img width="100%" :src="ruleForm.icon" alt="">
-        </el-dialog>
       </el-form-item>
       <el-form-item label="法规PDF文件名称：" prop="pdfName">
         <el-input v-model="ruleForm.pdfName" />
@@ -99,6 +95,33 @@
 
   </div>
 </template>
+
+<style>
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+</style>
 
 <script>
 import * as qiniu from 'qiniu-js'
@@ -135,9 +158,7 @@ export default {
     return {
       options: [],
       disabled: false,
-      imageUrl: '',
       valueId: '',
-      dialogVisible: false,
       regTypeList: [],
       classifyList: [],
       ruleForm: {
@@ -197,12 +218,12 @@ export default {
       var params = new URLSearchParams()
       params.append('typeId', this.ruleForm.typeId)
       this.$axios.post('http://localhost:8787/reg/showClassify', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.classifyList = res.data.data
           this.flag = true
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
           this.$message.error('没有二级目录')
           this.flag = false
@@ -228,9 +249,6 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList)
       this.ruleForm.icon = ''
-    },
-    handlePictureCardPreview() {
-      this.dialogVisible = true
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg'
@@ -283,14 +301,14 @@ export default {
         if (valid) {
           console.log(this.ruleForm.classifyId)
           this.$axios.post('http://localhost:8787/reg/addReg', this.ruleForm).then((res) => {
-            if (res.data.code == '2001') {
+            if (res.data.code === 2001) {
               this.$message({
                 message: '添加成功',
                 type: 'success'
               })
               this.$refs[formName].resetFields()
             }
-            if (res.data.code == '3001') {
+            if (res.data.code === 3001) {
               this.$message.error('添加失败')
             }
           })
@@ -316,11 +334,11 @@ export default {
         }
       })*/
       this.$axios.get('http://localhost:8787/cascader/showOptions').then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.options = res.data.data
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
         }
       })

@@ -125,13 +125,13 @@ export default {
       var params = new URLSearchParams()
       params.append('rid', this.ruleForm.rid)
       this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.dire = res.data.data
           this.valueId = this.ruleForm.parentId
           this.dialogFormVisible = true
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('无数据')
         }
       })
@@ -141,11 +141,11 @@ export default {
     },
     onload() {
       this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.regList = res.data.data
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
         }
       })
@@ -155,12 +155,16 @@ export default {
       var params = new URLSearchParams()
       params.append('rid', this.regId)
       this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.tableData = res.data.data
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('无数据')
+          this.$message({
+            type: 'info',
+            message: '此法规下目前无目录'
+          })
         }
       })
     },
@@ -185,11 +189,11 @@ export default {
       var params = new URLSearchParams()
       params.append('rid', this.ruleForm.rid)
       this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.dire = res.data.data
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('无数据')
           this.ruleForm.parentId = 0
         }
@@ -197,6 +201,7 @@ export default {
     },
     updateDir() {
       console.log(this.ruleForm)
+
     }
   }
 }

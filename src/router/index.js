@@ -174,31 +174,37 @@ export const constantRoutes = [
       {
         path: 'intro',
         component: () => import('@/views/settings/Introduction'),
+        name: 'Intro',
         meta: { title: '公司介绍', icon: 'instructions' }
       },
       {
         path: 'service',
         component: () => import('@/views/settings/Service'),
+        name: 'Service',
         meta: { title: '服务协议', icon: 'documentation' }
       },
       {
         path: 'smtp',
         component: () => import('@/views/settings/Smtp'),
+        name: 'Smtp',
         meta: { title: '邮件SMTP设置', icon: 'email' }
       },
       {
         path: 'mess',
         component: () => import('@/views/settings/Message'),
+        name: 'Mess',
         meta: { title: '短信设置', icon: 'tongxun' }
       },
       {
         path: 'admin',
         component: () => import('@/views/settings/Admin'),
+        name: 'Admin',
         meta: { title: '管理员管理', icon: 'user' }
       },
       {
         path: 'feedback',
         component: () => import('@/views/settings/Feedback'),
+        name: 'Feed',
         meta: { title: '意见反馈列表', icon: 'edit' }
       }
     ]

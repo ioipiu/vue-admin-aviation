@@ -8,7 +8,6 @@
     <el-table
       v-loading="loading"
       stripe
-      :default-sort="{prop: 'rno', order: 'descending'}"
       :data="tableData.filter(data => !search || data.alias.toLowerCase().includes(search.toLowerCase()) ||
         data.rname.includes(search))"
     >
@@ -144,14 +143,14 @@ export default {
         var params = new URLSearchParams()
         params.append('rid', rid)
         this.$axios.post('http://localhost:8787/reg/delReg', params).then((res) => {
-          if (res.data.code == '2001') {
+          if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
               type: 'success'
             })
             this.getData()
           }
-          if (res.data.code == '3001') {
+          if (res.data.code === 3001) {
             this.$message.error('删除失败')
           }
         })
@@ -176,13 +175,13 @@ export default {
       params.append('pageSize', this.pageSize)
       this.$axios.post('http://localhost:8787/reg/getAll', params).then((res) => {
         this.loading = true
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.tableData = res.data.data.tableData
           this.total = res.data.data.total
           this.loading = false
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
           this.loading = false
         }

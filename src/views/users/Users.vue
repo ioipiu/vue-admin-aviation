@@ -145,13 +145,13 @@ export default {
       params.append('pageSize', this.pageSize)
       this.$axios.post('http://localhost:8787/usr/getUsers', params).then((res) => {
         this.loading = true
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.tableData = res.data.data.tableData
           this.total = res.data.data.total
           this.loading = false
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
           this.loading = false
         }
@@ -159,14 +159,14 @@ export default {
     },
     onSumbit() {
       this.$axios.post('http://localhost:8787/usr/update', this.form).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           this.$message({
             message: '修改成功',
             type: 'success'
           })
           this.dialogFormVisible = false
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           this.$message.error('修改失败')
         }
       })

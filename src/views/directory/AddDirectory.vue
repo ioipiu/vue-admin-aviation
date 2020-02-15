@@ -4,7 +4,7 @@
       <el-input v-model="ruleForm.dname" />
     </el-form-item>
     <el-form-item label="同级目录排序 ：" prop="sort">
-      <el-input-number v-model="ruleForm.sort" controls-position="right" :min="0" :max="100" />
+      <el-input-number v-model="ruleForm.sort" controls-position="right" :min="1" :max="100" />
     </el-form-item>
     <el-form-item label="选择法规：" prop="rid">
       <el-select v-model="ruleForm.rid" clearable placeholder="请选择" style="width: 500px" @change="onChange">
@@ -71,13 +71,13 @@ export default {
         if (valid) {
           console.log(this.ruleForm)
           this.$axios.post('http://localhost:8787/dir/addDir', this.ruleForm).then((res) => {
-            if (res.data.code == '2001') {
+            if (res.data.code === 2001) {
               this.$message({
                 message: '添加成功',
                 type: 'success'
               })
             }
-            if (res.data.code == '3001') {
+            if (res.data.code === 3001) {
               this.$message.error('添加失败')
             }
           })
@@ -108,11 +108,11 @@ export default {
     },
     onload() {
       this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.options = res.data.data
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
         }
       })
@@ -123,11 +123,11 @@ export default {
       var params = new URLSearchParams()
       params.append('rid', this.ruleForm.rid)
       this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.dire = res.data.data
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('无数据')
         }
       })

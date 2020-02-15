@@ -56,7 +56,7 @@
           <el-button
             size="mini"
             @click="handleEdit(scope.$index, scope.row)"
-          >编辑</el-button>
+          >查看</el-button>
           <el-button
             size="mini"
             type="danger"
@@ -78,6 +78,32 @@
     />
 
     <!--弹出框-->
+
+    <el-dialog title="咨询内容详情" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="咨询人：" label-width="120px">
+          <el-input v-model="form.cname" autocomplete="off" :readonly="true" />
+        </el-form-item>
+        <el-form-item label="联系电话：" label-width="120px">
+          <el-input v-model="form.phone" autocomplete="off" :readonly="true" />
+        </el-form-item>
+        <el-form-item label="咨询内容：" label-width="120px">
+          <el-input
+            v-model="form.content"
+            type="textarea"
+            autosize
+            :readonly="true"
+          />
+        </el-form-item>
+        <el-form-item label="相关条款：" label-width="120px">
+          <el-input v-model="form.terms" autocomplete="off" :readonly="true" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -106,14 +132,36 @@ export default {
     this.onload()
   },
   methods: {
-    onSubmit() {
-      console.log('submit!')
-    },
     handleEdit(index, row) {
-      console.log(index, row)
+      this.form = row
+      this.dialogFormVisible = true
     },
     handleDelete(index, zid) {
-      console.log(index, zid)
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var params = new URLSearchParams()
+        params.append('zid', zid)
+        this.$axios.post('http://localhost:8787/usr/delCon', params).then((res) => {
+          if (res.data.code === 2001) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.onload()
+          }
+          if (res.data.code === 3001) {
+            this.$message.error('删除失败')
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     handleSizeChange: function(size) {
       this.pageSize = size
@@ -129,13 +177,13 @@ export default {
       params.append('pageSize', this.pageSize)
       this.$axios.post('http://localhost:8787/usr/getCons', params).then((res) => {
         this.loading = true
-        if (res.data.code == '2001') {
+        if (res.data.code === 2001) {
           console.log('请求成功')
           this.tableData = res.data.data.tableData
           this.total = res.data.data.total
           this.loading = false
         }
-        if (res.data.code == '3001') {
+        if (res.data.code === 3001) {
           console.log('请求失败')
           this.loading = false
         }
