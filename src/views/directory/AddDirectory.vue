@@ -18,6 +18,7 @@
     </el-form-item>
     <el-form-item label="选择父级目录：" prop="parentId">
       <el-cascader
+        :key="isResouceShow"
         v-model="valueId"
         :options="dire"
         :props="{ value: 'did', label: 'dname', checkStrictly: true}"
@@ -38,6 +39,7 @@ export default {
   name: 'AddDire',
   data() {
     return {
+      isResouceShow: 0,
       valueId: '',
       dire: [],
       ruleForm: {
@@ -45,7 +47,8 @@ export default {
         dname: '',
         sort: 0,
         parentId: 0,
-        level: 1
+        level: 1,
+        key: ''
       },
       options: [],
       rules: {
@@ -76,6 +79,7 @@ export default {
                 message: '添加成功',
                 type: 'success'
               })
+              this.resetForm(formName)
             }
             if (res.data.code === 3001) {
               this.$message.error('添加失败')
@@ -86,25 +90,28 @@ export default {
           return false
         }
       })
-      this.valueId = ''
-      this.dire = []
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
+      ++this.isResouceShow
       this.valueId = ''
       this.dire = []
     },
     onHandleChange() {
+      this.ruleForm.key = ''
       if (this.valueId.length === 1) {
         this.ruleForm.parentId = this.valueId[0]
-        this.ruleForm.level = this.valueId.length
-        console.log(this.valueId[0])
-        console.log('level:' + (this.valueId.length + 1))
+        this.ruleForm.level = this.valueId.length + 1
+        this.ruleForm.key += this.ruleForm.parentId + '-'
       } else {
+        for (var i = 0; i < this.valueId.length - 1; i++) {
+          this.ruleForm.key += this.valueId[i] + '-'
+        }
         this.ruleForm.parentId = this.valueId[this.valueId.length - 1]
-        this.ruleForm.level = this.valueId.length
-        console.log('level:' + (this.valueId.length + 1))
+        this.ruleForm.level = this.valueId.length + 1
+        this.ruleForm.key += this.ruleForm.parentId
       }
+      console.log(this.ruleForm.key)
     },
     onload() {
       this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
@@ -118,6 +125,7 @@ export default {
       })
     },
     onChange() {
+      ++this.isResouceShow
       this.valueId = ''
       this.dire = []
       var params = new URLSearchParams()

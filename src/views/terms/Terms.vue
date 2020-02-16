@@ -2,76 +2,66 @@
   <div>
     <el-form :inline="true" class="demo-form-inline" style="margin-top: 30px;margin-left:30px">
       <el-form-item label="选择法规：">
-        <el-select v-model="value" clearable placeholder="请选择" style="width: 400px">
+        <el-select v-model="regId" clearable placeholder="请选择" style="width: 400px" @change="onChange">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in regList"
+            :key="item.rid"
+            :label="item.rname"
+            :value="item.rid"
           />
         </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">查询</el-button>
-      </el-form-item>
-      <el-button type="primary" style="margin-left: 500px">新增目录</el-button>
+      <el-button type="primary" @click="toAdd">新增条款</el-button>
     </el-form>
     <el-table
       stripe
-      :default-sort="{prop: 'date', order: 'descending'}"
-      :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+      :data="tableData.filter(data => !search || data.termsAlias.toLowerCase().includes(search.toLowerCase()) ||
+        data.termsTitle.includes(search) || data.termsContent.includes(search))"
     >
       <el-table-column
-        prop="no"
+        prop="tno"
         label="条款号"
         sortable
-        width="200"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.no }}</span>
+          <span style="margin-left: 10px">{{ scope.row.tno }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="date"
+        prop="termsAlias"
         label="条款号别名"
-        width="300"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span style="margin-left: 10px">{{ scope.row.termsAlias }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="no"
+        prop="termsTitle"
         label="条款标题"
         sortable
-        width="200"
+        width="300px"
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.no }}</span>
+          <span style="margin-left: 10px">{{ scope.row.termsTitle }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="rname"
         label="所属法规名称"
+        width="500px"
       >
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>地址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.address }}</el-tag>
-            </div>
-          </el-popover>
+          <span style="margin-left: 10px">{{ scope.row.rname }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="termsVersion"
         label="版本号"
         sortable
-        width="200"
+        width="150px"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span style="margin-left: 10px">{{ scope.row.termsVersion }}</span>
         </template>
       </el-table-column>
       <el-table-column align="right" width="300px">
@@ -85,12 +75,12 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handleEdit(scope.$index, scope.row.tid)"
           >编辑</el-button>
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row.sid)"
+            @click="handleDelete(scope.$index, scope.row.tid)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -114,69 +104,103 @@ export default {
   name: 'Terms',
   data() {
     return {
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      formInline: {
-        user: '',
-        region: ''
-      },
+      regList: [],
+      regId: '',
+      options: [],
       value: '',
-      tableData: [{
-        no: '20',
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        no: '21',
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        no: '22',
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        no: '23',
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }],
+      tableData: [],
       search: '',
       currentPage: 1,
       pageSize: 10,
       total: 0
     }
   },
+  mounted() {
+    this.onload()
+  },
   methods: {
-    handleEdit(index, row) {
-      console.log(index, row)
+    handleEdit(index, tid) {
+      console.log(index, tid)
+      this.$router.push({
+        name: 'UpdateTerms',
+        query: {
+          tid: tid
+        }
+      })
     },
-    handleDelete(index, row) {
-      console.log(index, row)
+    handleDelete(index, tid) {
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var params = new URLSearchParams()
+        params.append('tid', tid)
+        this.$axios.post('http://localhost:8787/term/delTerms', params).then((res) => {
+          if (res.data.code === 2001) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.onChange()
+          }
+          if (res.data.code === 3001) {
+            this.$message.error('删除失败')
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+    handleSizeChange: function(size) {
+      console.log(this.regId)
+      this.pageSize = size
+      this.onChange()
     },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+    handleCurrentChange: function(currentPage) {
+      this.currentPage = currentPage
+      this.onChange()
     },
     onSubmit() {
       console.log('submit!')
+    },
+    onload() {
+      this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
+        if (res.data.code === 2001) {
+          console.log('请求成功')
+          this.regList = res.data.data
+        }
+        if (res.data.code === 3001) {
+          console.log('请求失败')
+        }
+      })
+    },
+    onChange() {
+      var params = new URLSearchParams()
+      params.append('rid', this.regId)
+      params.append('currentPage', this.currentPage)
+      params.append('pageSize', this.pageSize)
+      this.$axios.post('http://localhost:8787/term/getTerms', params).then((res) => {
+        if (res.data.code === 2001) {
+          console.log('请求成功')
+          this.total = res.data.data.total
+          this.tableData = res.data.data.tableData
+        }
+        if (res.data.code === 3001) {
+          console.log('无数据')
+          this.tableData = []
+          this.$message({
+            type: 'info',
+            message: '此法规下目前无条款'
+          })
+        }
+      })
+    },
+    toAdd() {
+      this.$router.push({ path: '/reg/addTerms' })
     }
   }
 }

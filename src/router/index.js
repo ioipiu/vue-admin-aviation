@@ -110,6 +110,13 @@ export const constantRoutes = [
         component: () => import('@/views/regulations/Update'),
         meta: { title: '修改法规' },
         hidden: true
+      },
+      {
+        path: 'updateTerms',
+        name: 'UpdateTerms',
+        component: () => import('@/views/terms/Update'),
+        meta: { title: '修改条款' },
+        hidden: true
       }
     ]
   },

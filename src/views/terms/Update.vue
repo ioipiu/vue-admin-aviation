@@ -45,8 +45,8 @@
         <el-input v-model="ruleForm.termsKeyword" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')">立即保存</el-button>
+        <el-button @click="goback">返回</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -101,23 +101,21 @@ export default {
   },
   mounted() {
     this.onload()
+    this.getTerms()
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.ruleForm)
-          this.$axios.post('http://localhost:8787/term/addTerms', this.ruleForm).then((res) => {
+          this.$axios.post('http://localhost:8787/term/updateTerms', this.ruleForm).then((res) => {
             if (res.data.code === 2001) {
               this.$message({
-                message: '添加成功',
+                message: '修改成功',
                 type: 'success'
               })
-              this.$refs[formName].resetFields()
-              this.valueId = ''
             }
             if (res.data.code === 3001) {
-              this.$message.error('添加失败')
+              this.$message.error('修改失败')
             }
           })
         } else {
@@ -126,17 +124,16 @@ export default {
         }
       })
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
-      ++this.isResouceShow
-      this.valueId = ''
-      this.dire = []
+    goback() {
+      this.$router.push({ path: '/reg/terms' })
     },
     onHandleChange() {
       if (this.valueId.length === 1) {
         this.ruleForm.did = this.valueId[0]
+        console.log(this.valueId[0])
       } else {
         this.ruleForm.did = this.valueId[this.valueId.length - 1]
+        console.log(this.ruleForm.did)
       }
     },
     onload() {
@@ -147,6 +144,33 @@ export default {
         }
         if (res.data.code === 3001) {
           console.log('请求失败')
+        }
+      })
+    },
+    getTerms() {
+      var tid = this.$route.query.tid
+      var params = new URLSearchParams()
+      params.append('tid', tid)
+      this.$axios.post('http://localhost:8787/term/getTermsById', params).then((res) => {
+        if (res.data.code === 2001) {
+          console.log('请求成功')
+          this.ruleForm = res.data.data
+          var params = new URLSearchParams()
+          params.append('rid', this.ruleForm.rid)
+          this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+            if (res.data.code === 2001) {
+              console.log('请求成功')
+              this.dire = res.data.data
+              this.valueId = this.ruleForm.did
+            }
+            if (res.data.code === 3001) {
+              console.log('无数据')
+            }
+          })
+        }
+        if (res.data.code === 3001) {
+          console.log('请求失败')
+          this.$message.error('获取数据失败')
         }
       })
     },
