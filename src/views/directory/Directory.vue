@@ -44,7 +44,7 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row.did)"
+            @click="handleDelete(scope.$index, scope.row)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -56,7 +56,10 @@
           <el-input v-model="ruleForm.dname" style="width: 500px" />
         </el-form-item>
         <el-form-item label="同级目录排序 ：" prop="sort">
-          <el-input-number v-model="ruleForm.sort" controls-position="right" :min="0" :max="100" />
+          <el-input-number v-model="ruleForm.sort" controls-position="right" :min="1" :max="100" />
+        </el-form-item>
+        <el-form-item label="目录层级：" prop="level">
+          <el-input-number v-model="ruleForm.level" controls-position="right" :min="1" :max="100" />
         </el-form-item>
         <el-form-item label="选择法规：" prop="rid">
           <el-select v-model="ruleForm.rid" clearable placeholder="请选择" style="width: 500px" @change="handerChange">
@@ -136,8 +139,34 @@ export default {
         }
       })
     },
-    handleDelete(index, did) {
-      console.log(index, did)
+    handleDelete(index, row) {
+      console.log(index, row)
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var params = new URLSearchParams()
+        params.append('rid', row.rid)
+        params.append('did', row.did)
+        this.$axios.post('http://localhost:8787/cascader/delDir', params).then((res) => {
+          if (res.data.code === 2001) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.onChange()
+          }
+          if (res.data.code === 3001) {
+            this.$message.error('删除失败')
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     onload() {
       this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
@@ -201,7 +230,18 @@ export default {
     },
     updateDir() {
       console.log(this.ruleForm)
-
+      this.$axios.post('http://localhost:8787/dir/updateDir', this.ruleForm).then((res) => {
+        if (res.data.code === 2001) {
+          this.$message({
+            message: '修改成功',
+            type: 'success'
+          })
+          this.dialogFormVisible = false
+        }
+        if (res.data.code === 3001) {
+          this.$message.error('修改失败')
+        }
+      })
     }
   }
 }

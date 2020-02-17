@@ -22,7 +22,7 @@
         label="法规二级分类"
       >
         <template slot-scope="scope">
-          <span v-for="(item,index) in scope.row.regulationsClassifyList" style="margin-left: 10px">{{ item.classifyName }}</span>
+          <span v-for="item in scope.row.regulationsClassifyList" style="margin-left: 10px">{{ item.classifyName }}</span>
         </template>
       </el-table-column>
 
@@ -190,13 +190,13 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('typeId', typeId)
-        this.$axios.post('', params).then((res) => {
+        this.$axios.post('http://localhost:8787/reg/delType', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
               type: 'success'
             })
-            this.getData()
+            this.onload()
           }
           if (res.data.code === 3001) {
             this.$message.error('删除失败')
