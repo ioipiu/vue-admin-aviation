@@ -106,8 +106,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.ruleForm)
-          this.$axios.post('http://localhost:8787/term/addTerms', this.ruleForm).then((res) => {
+          this.$axios.post(this.$url + 'term/addTerms', this.ruleForm).then((res) => {
             if (res.data.code === 2001) {
               this.$message({
                 message: '添加成功',
@@ -140,7 +139,7 @@ export default {
       }
     },
     onload() {
-      this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
+      this.$axios.get(this.$url + 'cascader/getAllReg').then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.options = res.data.data
@@ -156,7 +155,7 @@ export default {
       this.dire = []
       var params = new URLSearchParams()
       params.append('rid', this.ruleForm.rid)
-      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+      this.$axios.post(this.$url + 'cascader/getDir', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.dire = res.data.data

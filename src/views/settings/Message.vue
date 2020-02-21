@@ -29,7 +29,7 @@ export default {
       var params = new URLSearchParams()
       params.append('id', this.ruleForm.id)
       params.append('apiKey', this.ruleForm.apiKey)
-      this.$axios.post('http://localhost:8787/setup/updateSms', params).then((res) => {
+      this.$axios.post(this.$url + 'setup/updateSms', params).then((res) => {
         if (res.data.code === 2001) {
           this.$message({
             message: '修改成功',
@@ -45,7 +45,7 @@ export default {
       this.$refs[formName].resetFields()
     },
     onload() {
-      this.$axios.get('http://localhost:8787/setup/getSms').then((res) => {
+      this.$axios.get(this.$url + 'setup/getSms').then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.ruleForm = res.data.data

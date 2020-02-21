@@ -22,7 +22,7 @@
         label="法规二级分类"
       >
         <template slot-scope="scope">
-          <span v-for="item in scope.row.regulationsClassifyList" style="margin-left: 10px">{{ item.classifyName }}</span>
+          <span v-for="(item,index) in scope.row.regulationsClassifyList" :key="index" style="margin-left: 10px">{{ item.classifyName }}</span>
         </template>
       </el-table-column>
 
@@ -134,7 +134,7 @@ export default {
     addOrg() {
       var params = new URLSearchParams()
       params.append('typeName', this.form.typeName)
-      this.$axios.post('http://localhost:8787/reg/addType', params).then((res) => {
+      this.$axios.post(this.$url + 'reg/addType', params).then((res) => {
         if (res.data.code === 2001) {
           this.$message({
             message: '添加成功',
@@ -152,9 +152,10 @@ export default {
       this.dialogFormVisible = true
     },
     handleEdit(index, typeId) {
+      this.formInline = {}
       var params = new URLSearchParams()
       params.append('typeId', typeId)
-      this.$axios.post('http://localhost:8787/reg/showClassify', params).then((res) => {
+      this.$axios.post(this.$url + 'reg/showClassify', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.classifyList = res.data.data
@@ -172,13 +173,14 @@ export default {
     refresh() {
       var params = new URLSearchParams()
       params.append('typeId', this.formInline.typeId)
-      this.$axios.post('http://localhost:8787/reg/showClassify', params).then((res) => {
+      this.$axios.post(this.$url + 'reg/showClassify', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.classifyList = res.data.data
         }
         if (res.data.code === 3001) {
           console.log('请求失败')
+          this.classifyList = []
         }
       })
     },
@@ -190,7 +192,7 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('typeId', typeId)
-        this.$axios.post('http://localhost:8787/reg/delType', params).then((res) => {
+        this.$axios.post(this.$url + 'reg/delType', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -221,7 +223,7 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('classifyId', classifyId)
-        this.$axios.post('http://localhost:8787/reg/delClassify', params).then((res) => {
+        this.$axios.post(this.$url + 'reg/delClassify', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -242,7 +244,7 @@ export default {
       })
     },
     onload() {
-      this.$axios.get('http://localhost:8787/reg/type').then((res) => {
+      this.$axios.get(this.$url + 'reg/type').then((res) => {
         this.loading = true
         if (res.data.code === 2001) {
           console.log('请求成功')
@@ -259,7 +261,7 @@ export default {
       var params = new URLSearchParams()
       params.append('typeId', this.formInline.typeId)
       params.append('classifyName', this.formInline.classifyName)
-      this.$axios.post('http://localhost:8787/reg/addClassify', params).then((res) => {
+      this.$axios.post(this.$url + 'reg/addClassify', params).then((res) => {
         if (res.data.code === 2001) {
           this.$message({
             message: '添加成功',
@@ -275,7 +277,7 @@ export default {
       })
     },
     updateClassify() {
-      this.$axios.post('http://localhost:8787/reg/updateClassify', this.classify).then((res) => {
+      this.$axios.post(this.$url + 'reg/updateClassify', this.classify).then((res) => {
         if (res.data.code === 2001) {
           this.$message({
             message: '修改成功',

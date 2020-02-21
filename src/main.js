@@ -29,6 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 Vue.prototype.$moment = moment
 Vue.prototype.$axios = axios
+Vue.prototype.$url = 'http://localhost:8787/'
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明

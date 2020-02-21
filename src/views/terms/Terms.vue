@@ -136,7 +136,7 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('tid', tid)
-        this.$axios.post('http://localhost:8787/term/delTerms', params).then((res) => {
+        this.$axios.post(this.$url + 'term/delTerms', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -168,7 +168,7 @@ export default {
       console.log('submit!')
     },
     onload() {
-      this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
+      this.$axios.get(this.$url + 'cascader/getAllReg').then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.regList = res.data.data
@@ -183,7 +183,7 @@ export default {
       params.append('rid', this.regId)
       params.append('currentPage', this.currentPage)
       params.append('pageSize', this.pageSize)
-      this.$axios.post('http://localhost:8787/term/getTerms', params).then((res) => {
+      this.$axios.post(this.$url + 'term/getTerms', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.total = res.data.data.total

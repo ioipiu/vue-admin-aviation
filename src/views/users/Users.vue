@@ -143,7 +143,7 @@ export default {
       const params = new URLSearchParams()
       params.append('currentPage', this.currentPage)
       params.append('pageSize', this.pageSize)
-      this.$axios.post('http://localhost:8787/usr/getUsers', params).then((res) => {
+      this.$axios.post(this.$url + 'usr/getUsers', params).then((res) => {
         this.loading = true
         if (res.data.code === 2001) {
           console.log('请求成功')
@@ -158,7 +158,7 @@ export default {
       })
     },
     onSumbit() {
-      this.$axios.post('http://localhost:8787/usr/update', this.form).then((res) => {
+      this.$axios.post(this.$url + 'usr/update', this.form).then((res) => {
         if (res.data.code === 2001) {
           this.$message({
             message: '修改成功',

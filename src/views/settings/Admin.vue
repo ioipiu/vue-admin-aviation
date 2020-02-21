@@ -123,7 +123,7 @@ export default {
         if (reg.test(value)) {
           var params = new URLSearchParams()
           params.append('mobile', value)
-          this.$axios.post('http://localhost:8787/admin/findMobile', params).then((res) => {
+          this.$axios.post(this.$url + 'admin/findMobile', params).then((res) => {
             if (res.data.code === 2001) {
               callback()
             }
@@ -186,7 +186,7 @@ export default {
           params.append('mobile', this.ruleForm.mobile)
           params.append('aname', this.ruleForm.aname)
           params.append('passWord', this.ruleForm.passWord)
-          this.$axios.post('http://localhost:8787/admin/addAdmin', params).then((res) => {
+          this.$axios.post(this.$url + 'admin/addAdmin', params).then((res) => {
             if (res.data.code === 2001) {
               this.$message({
                 message: '添加成功',
@@ -213,7 +213,7 @@ export default {
           params.append('aid', this.form.aid)
           params.append('aname', this.form.aname)
           params.append('passWord', this.form.passWord)
-          this.$axios.post('http://localhost:8787/admin/updateAdmin', params).then((res) => {
+          this.$axios.post(this.$url + 'admin/updateAdmin', params).then((res) => {
             if (res.data.code === 2001) {
               this.$message({
                 message: '修改成功',
@@ -243,7 +243,7 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('aid', aid)
-        this.$axios.post('http://localhost:8787/admin/delAdmin', params).then((res) => {
+        this.$axios.post(this.$url + 'admin/delAdmin', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -274,7 +274,7 @@ export default {
       const params = new URLSearchParams()
       params.append('currentPage', this.currentPage)
       params.append('pageSize', this.pageSize)
-      this.$axios.post('http://localhost:8787/admin/showAdmin', params).then((res) => {
+      this.$axios.post(this.$url + 'admin/showAdmin', params).then((res) => {
         this.loading = true
         if (res.data.code === 2001) {
           console.log('请求成功')

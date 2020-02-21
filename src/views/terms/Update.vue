@@ -107,7 +107,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$axios.post('http://localhost:8787/term/updateTerms', this.ruleForm).then((res) => {
+          this.$axios.post(this.$url + 'term/updateTerms', this.ruleForm).then((res) => {
             if (res.data.code === 2001) {
               this.$message({
                 message: '修改成功',
@@ -137,7 +137,7 @@ export default {
       }
     },
     onload() {
-      this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
+      this.$axios.get(this.$url + 'cascader/getAllReg').then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.options = res.data.data
@@ -151,13 +151,13 @@ export default {
       var tid = this.$route.query.tid
       var params = new URLSearchParams()
       params.append('tid', tid)
-      this.$axios.post('http://localhost:8787/term/getTermsById', params).then((res) => {
+      this.$axios.post(this.$url + 'term/getTermsById', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.ruleForm = res.data.data
           var params = new URLSearchParams()
           params.append('rid', this.ruleForm.rid)
-          this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+          this.$axios.post(this.$url + 'cascader/getDir', params).then((res) => {
             if (res.data.code === 2001) {
               console.log('请求成功')
               this.dire = res.data.data
@@ -180,7 +180,7 @@ export default {
       this.dire = []
       var params = new URLSearchParams()
       params.append('rid', this.ruleForm.rid)
-      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+      this.$axios.post(this.$url + 'cascader/getDir', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.dire = res.data.data

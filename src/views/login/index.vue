@@ -108,25 +108,15 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          const params = new URLSearchParams()
-          params.append('mobile', this.loginForm.username)
-          params.append('passWord', this.loginForm.password)
-          this.$axios.post('http://localhost:8787/admin/login', params).then((res) => {
-            if (res.data.code === 2001) {
-              sessionStorage.setItem('admin', JSON.stringify(res.data.data))
-              this.$store.dispatch('user/login', this.loginForm).then(() => {
-                this.$router.push({ path: this.redirect || '/' })
-                this.loading = false
-              }).catch(() => {
-                this.loading = false
-              })
-              this.$message({
-                message: '恭喜你，登录成功',
-                type: 'success'
-              })
-            } else {
-              this.$message.error('对不起，账号密码错误')
-            }
+          this.$store.dispatch('user/login', this.loginForm).then(() => {
+            this.$router.push({ path: this.redirect || '/' })
+            this.loading = false
+            this.$message({
+              message: '登录成功',
+              type: 'success'
+            })
+          }).catch(() => {
+            this.loading = false
           })
         } else {
           console.log('error submit!!')

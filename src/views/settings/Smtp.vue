@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     submitForm() {
-      this.$axios.post('http://localhost:8787/setup/updateSmtp', this.ruleForm).then((res) => {
+      this.$axios.post(this.$url + 'setup/updateSmtp', this.ruleForm).then((res) => {
         if (res.data.code === 2001) {
           this.$message({
             message: '修改成功',
@@ -67,7 +67,7 @@ export default {
       this.$refs[formName].resetFields()
     },
     onload() {
-      this.$axios.get('http://localhost:8787/setup/getSmtp').then((res) => {
+      this.$axios.get(this.$url + 'setup/getSmtp').then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.ruleForm = res.data.data

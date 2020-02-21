@@ -142,7 +142,7 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('rid', rid)
-        this.$axios.post('http://localhost:8787/reg/delReg', params).then((res) => {
+        this.$axios.post(this.$url + 'reg/delReg', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -173,7 +173,7 @@ export default {
       const params = new URLSearchParams()
       params.append('currentPage', this.currentPage)
       params.append('pageSize', this.pageSize)
-      this.$axios.post('http://localhost:8787/reg/getAll', params).then((res) => {
+      this.$axios.post(this.$url + 'reg/getAll', params).then((res) => {
         this.loading = true
         if (res.data.code === 2001) {
           console.log('请求成功')

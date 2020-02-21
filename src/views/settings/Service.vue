@@ -41,7 +41,7 @@ export default {
       var params = new URLSearchParams()
       params.append('id', this.ruleForm.id)
       params.append('content', this.ruleForm.content)
-      this.$axios.post('http://localhost:8787/setup/updateAgree', params).then((res) => {
+      this.$axios.post(this.$url + 'setup/updateAgree', params).then((res) => {
         if (res.data.code === 2001) {
           this.$message({
             message: '修改成功',
@@ -57,7 +57,7 @@ export default {
       this.$refs[formName].resetFields()
     },
     onload() {
-      this.$axios.get('http://localhost:8787/setup/getAgree').then((res) => {
+      this.$axios.get(this.$url + 'setup/getAgree').then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.ruleForm = res.data.data

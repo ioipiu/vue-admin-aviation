@@ -115,7 +115,7 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('fid', fid)
-        this.$axios.post('http://localhost:8787/setup/delFeedback', params).then((res) => {
+        this.$axios.post(this.$url + 'setup/delFeedback', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -146,7 +146,7 @@ export default {
       const params = new URLSearchParams()
       params.append('currentPage', this.currentPage)
       params.append('pageSize', this.pageSize)
-      this.$axios.post('http://localhost:8787/setup/showFeedback', params).then((res) => {
+      this.$axios.post(this.$url + 'setup/showFeedback', params).then((res) => {
         this.loading = true
         if (res.data.code === 2001) {
           console.log('请求成功')

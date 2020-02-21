@@ -144,7 +144,7 @@ export default {
       }).then(() => {
         var params = new URLSearchParams()
         params.append('zid', zid)
-        this.$axios.post('http://localhost:8787/usr/delCon', params).then((res) => {
+        this.$axios.post(this.$url + 'usr/delCon', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -175,7 +175,7 @@ export default {
       const params = new URLSearchParams()
       params.append('currentPage', this.currentPage)
       params.append('pageSize', this.pageSize)
-      this.$axios.post('http://localhost:8787/usr/getCons', params).then((res) => {
+      this.$axios.post(this.$url + 'usr/getCons', params).then((res) => {
         this.loading = true
         if (res.data.code === 2001) {
           console.log('请求成功')

@@ -64,7 +64,6 @@
           ref="editor"
           v-model="ruleForm.desc"
           :disabled="disabled"
-          @onClick="onClick"
         />
       </el-form-item>
       <el-form-item>
@@ -166,12 +165,6 @@ export default {
     this.onload()
   },
   methods: {
-    // 鼠标单击的事件
-    onClick(e, editor) {
-      console.log('Element clicked')
-      console.log(e)
-      console.log(editor)
-    },
     // 清空内容
     clear() {
       this.$refs.editor.clear()
@@ -184,7 +177,7 @@ export default {
     typeChange() {
       var params = new URLSearchParams()
       params.append('typeId', this.ruleForm.typeId)
-      this.$axios.post('http://localhost:8787/reg/showClassify', params).then((res) => {
+      this.$axios.post(this.$url + 'reg/showClassify', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.classifyList = res.data.data
@@ -231,7 +224,7 @@ export default {
       return isJPG && isLt2M
     },
     uploadRequest: function(request) {
-      this.$axios.get('http://localhost:8787/reg/getToken').then((res) => {
+      this.$axios.get(this.$url + 'reg/getToken').then((res) => {
         const token = res.data.data.token
         const host = res.data.data.host
         upload(
@@ -267,7 +260,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$axios.post('http://localhost:8787/reg/updateReg', this.ruleForm).then((res) => {
+          this.$axios.post(this.$url + 'reg/updateReg', this.ruleForm).then((res) => {
             if (res.data.code === 2001) {
               this.$message({
                 message: '修改成功',
@@ -291,7 +284,7 @@ export default {
       var rid = this.$route.query.rid
       const params = new URLSearchParams()
       params.append('rid', rid)
-      this.$axios.post('http://localhost:8787/reg/getRegById', params).then((res) => {
+      this.$axios.post(this.$url + 'reg/getRegById', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.options = res.data.data.options

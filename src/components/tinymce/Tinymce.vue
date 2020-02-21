@@ -19,6 +19,7 @@ import 'tinymce/plugins/media'// 插入视频插件
 import 'tinymce/plugins/table'// 插入表格插件
 import 'tinymce/plugins/lists'// 列表插件
 import 'tinymce/plugins/wordcount'// 字数统计插件
+import 'tinymce/plugins/paste'
 import '@dimakorotkov/tinymce-mathjax'
 export default {
   components: {
@@ -41,11 +42,11 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'lists image media table wordcount mathjax'
+      default: 'lists image media table wordcount mathjax paste'
     },
     toolbar: {
       type: [String, Array],
-      default: 'undo redo |  formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat | mathjax'
+      default: 'undo redo |  formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat | mathjax | paste'
     }
   },
   data() {
@@ -58,6 +59,7 @@ export default {
         // skin_url: `${this.baseUrl}/tinymce/skins/ui/oxide-dark`, // 暗色系
         // content_css: `${this.baseUrl}/tinymce/skins/content/dark/content.css`, // 暗色系
         height: 300,
+        paste_data_images: true,
         plugins: this.plugins,
         toolbar: this.toolbar,
         mathjax: {

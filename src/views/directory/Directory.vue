@@ -73,6 +73,7 @@
         </el-form-item>
         <el-form-item label="选择父级目录：" prop="parentId">
           <el-cascader
+            :key="isResouceShow"
             v-model="valueId"
             :options="dire"
             :props="{ value: 'did', label: 'dname', checkStrictly: true}"
@@ -84,7 +85,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="updateDir">确 定</el-button>
+        <el-button type="primary" @click="updateDir('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -96,6 +97,7 @@ export default {
   name: 'Directory',
   data() {
     return {
+      isResouceShow: 0,
       dialogFormVisible: false,
       valueId: '',
       options: [],
@@ -127,7 +129,7 @@ export default {
       this.ruleForm = row
       var params = new URLSearchParams()
       params.append('rid', this.ruleForm.rid)
-      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+      this.$axios.post(this.$url + 'cascader/getDir', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.dire = res.data.data
@@ -140,7 +142,6 @@ export default {
       })
     },
     handleDelete(index, row) {
-      console.log(index, row)
       this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -149,7 +150,7 @@ export default {
         var params = new URLSearchParams()
         params.append('rid', row.rid)
         params.append('did', row.did)
-        this.$axios.post('http://localhost:8787/cascader/delDir', params).then((res) => {
+        this.$axios.post(this.$url + 'cascader/delDir', params).then((res) => {
           if (res.data.code === 2001) {
             this.$message({
               message: '删除成功',
@@ -169,7 +170,7 @@ export default {
       })
     },
     onload() {
-      this.$axios.get('http://localhost:8787/cascader/getAllReg').then((res) => {
+      this.$axios.get(this.$url + 'cascader/getAllReg').then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.regList = res.data.data
@@ -183,7 +184,7 @@ export default {
       this.tableData = []
       var params = new URLSearchParams()
       params.append('rid', this.regId)
-      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+      this.$axios.post(this.$url + 'cascader/getDir', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.tableData = res.data.data
@@ -201,6 +202,10 @@ export default {
       this.$router.push({ path: '/reg/addDire' })
     },
     onHandleChange() {
+      if (this.valueId == null) {
+        this.ruleForm.parentId = 0
+        console.log(this.ruleForm.parentId)
+      }
       if (this.valueId.length === 1) {
         this.ruleForm.parentId = this.valueId[0]
         this.ruleForm.level = this.valueId.length
@@ -213,11 +218,13 @@ export default {
       }
     },
     handerChange() {
+      ++this.isResouceShow
       this.valueId = ''
+      this.ruleForm.parentId = 0
       this.dire = []
       var params = new URLSearchParams()
       params.append('rid', this.ruleForm.rid)
-      this.$axios.post('http://localhost:8787/cascader/getDir', params).then((res) => {
+      this.$axios.post(this.$url + 'cascader/getDir', params).then((res) => {
         if (res.data.code === 2001) {
           console.log('请求成功')
           this.dire = res.data.data
@@ -228,18 +235,25 @@ export default {
         }
       })
     },
-    updateDir() {
-      console.log(this.ruleForm)
-      this.$axios.post('http://localhost:8787/dir/updateDir', this.ruleForm).then((res) => {
-        if (res.data.code === 2001) {
-          this.$message({
-            message: '修改成功',
-            type: 'success'
+    updateDir(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$axios.post(this.$url + 'dir/updateDir', this.ruleForm).then((res) => {
+            if (res.data.code === 2001) {
+              this.$message({
+                message: '修改成功',
+                type: 'success'
+              })
+              this.onChange()
+              this.dialogFormVisible = false
+            }
+            if (res.data.code === 3001) {
+              this.$message.error('修改失败')
+            }
           })
-          this.dialogFormVisible = false
-        }
-        if (res.data.code === 3001) {
-          this.$message.error('修改失败')
+        } else {
+          console.log('error submit!!')
+          return false
         }
       })
     }
