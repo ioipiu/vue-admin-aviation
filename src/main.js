@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 Vue.prototype.$moment = moment
 Vue.prototype.$axios = axios
-Vue.prototype.$url = 'http://localhost:8787/'
+Vue.prototype.$url = 'http://123.57.145.243:8787/'
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
@@ -37,7 +37,7 @@ Vue.use(ElementUI, { locale })
 Vue.filter('dateformat', function(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
   return moment(dataStr).format(pattern)
 })
-
+Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 Vue.config.productionTip = false
 
 new Vue({

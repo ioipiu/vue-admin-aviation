@@ -213,6 +213,12 @@ export const constantRoutes = [
         component: () => import('@/views/settings/Feedback'),
         name: 'Feed',
         meta: { title: '意见反馈列表', icon: 'edit' }
+      },
+      {
+        path: 'logger',
+        component: () => import('@/views/logger/index'),
+        name: 'Logger',
+        meta: { title: '操作日志', icon: 'editor' }
       }
     ]
   },
