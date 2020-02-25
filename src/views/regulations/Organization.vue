@@ -43,7 +43,7 @@
 
     <!--弹出框-->
 
-    <el-dialog title="添加一级分类" :visible.sync="dialogFormVisible">
+    <el-dialog title="添加一级分类" :visible.sync="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form :model="form" style="width: 500px">
         <el-form-item label="分类名称：" label-width="120px">
           <el-input v-model="form.typeName" autocomplete="off" />
@@ -57,7 +57,7 @@
 
     <!--弹出表格-->
 
-    <el-dialog title="法规二级分类" :visible.sync="dialogTableVisible">
+    <el-dialog title="法规二级分类" :visible.sync="dialogTableVisible" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="二级分类名称：">
           <el-input v-model="formInline.classifyName" placeholder="请输入" style="width:300px" />
@@ -85,7 +85,7 @@
     </el-dialog>
 
     <!--表格内表格-->
-    <el-dialog title="编辑二级分类" :visible.sync="formVisible">
+    <el-dialog title="编辑二级分类" :visible.sync="formVisible" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form :model="classify" style="width: 500px">
         <el-form-item label="一级分类：" label-width="120px">
           <el-select v-model="classify.typeId" placeholder="请选法规一级分类">
@@ -149,6 +149,7 @@ export default {
       })
     },
     btn() {
+      this.form = {}
       this.dialogFormVisible = true
     },
     handleEdit(index, typeId) {

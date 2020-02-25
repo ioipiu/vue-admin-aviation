@@ -71,7 +71,7 @@
 
     <!--添加弹出框-->
 
-    <el-dialog title="添加子管理员" :visible.sync="dialogFormVisible" width="500px">
+    <el-dialog title="添加子管理员" :visible.sync="dialogFormVisible" width="500px" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" class="demo-ruleForm">
         <el-form-item label="管理员姓名：" label-width="120px" prop="aname">
           <el-input v-model="ruleForm.aname" autocomplete="off" />
@@ -177,6 +177,7 @@ export default {
   },
   methods: {
     onAdd() {
+      this.ruleForm = {}
       this.dialogFormVisible = true
     },
     onSubmit(formName) {

@@ -50,7 +50,7 @@
       </el-table-column>
     </el-table>
     <!--弹出框-->
-    <el-dialog title="修改目录" :visible.sync="dialogFormVisible">
+    <el-dialog title="修改目录" :visible.sync="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="200px" class="demo-ruleForm">
         <el-form-item label="目录名称 ：" prop="dname">
           <el-input v-model="ruleForm.dname" style="width: 500px" />

@@ -83,7 +83,7 @@
 
     <!--弹出框-->
 
-    <el-dialog title="用户管理" :visible.sync="dialogFormVisible" width="500px">
+    <el-dialog title="用户管理" :visible.sync="dialogFormVisible" width="500px" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form :model="form">
         <el-form-item label="会员类型" label-width="120px">
           <el-select v-model="form.vip" placeholder="请选择会员类型">

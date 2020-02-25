@@ -86,7 +86,7 @@
 
     <!--弹出框-->
 
-    <el-dialog title="日志详情" :visible.sync="dialogFormVisible">
+    <el-dialog title="日志详情" :visible.sync="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form :model="form">
         <el-form-item label="操作者：" label-width="120px">
           <el-input v-model="form.username" autocomplete="off" :readonly="true" />

@@ -79,7 +79,7 @@
 
     <!--弹出框-->
 
-    <el-dialog title="咨询内容详情" :visible.sync="dialogFormVisible">
+    <el-dialog title="咨询内容详情" :visible.sync="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
       <el-form :model="form">
         <el-form-item label="咨询人：" label-width="120px">
           <el-input v-model="form.cname" autocomplete="off" :readonly="true" />

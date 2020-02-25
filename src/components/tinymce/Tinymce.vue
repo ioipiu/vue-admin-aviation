@@ -20,7 +20,6 @@ import 'tinymce/plugins/table'// 插入表格插件
 import 'tinymce/plugins/lists'// 列表插件
 import 'tinymce/plugins/wordcount'// 字数统计插件
 import 'tinymce/plugins/paste'
-import '@dimakorotkov/tinymce-mathjax'
 export default {
   components: {
     Editor
@@ -42,11 +41,11 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'lists image media table wordcount mathjax paste'
+      default: 'lists image media table wordcount paste'
     },
     toolbar: {
       type: [String, Array],
-      default: 'undo redo |  formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat | mathjax | paste'
+      default: 'undo redo |  formatselect | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat | paste'
     }
   },
   data() {
@@ -62,9 +61,6 @@ export default {
         paste_data_images: true,
         plugins: this.plugins,
         toolbar: this.toolbar,
-        mathjax: {
-          lib: 'mathjax/es5/tex-mml-chtml.js'
-        },
         branding: false,
         menubar: false,
         // 此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
